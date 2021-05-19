@@ -18,7 +18,7 @@ current query. It defaults to true.
 Queries can be executed by calling `execute()` member function.
 
 ```c++
-#include "sphinxql.h"
+#include <sphinxql/sphinxql.h>
 
 int main() {
     SphinxQL::Query query;
@@ -65,7 +65,7 @@ When `add()` is called with string based query, it accepts `bool showMeta` argum
 same as the `SphinxQL::Query` does.
 
 ```c++
-#include "sphinxql.h"
+#include <sphinxql/sphinxql.h>
 
 int main() {
     SphinxQL::AsyncQuery query("localhost", 9306);
