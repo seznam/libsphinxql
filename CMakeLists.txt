@@ -4,6 +4,15 @@ cmake_policy(VERSION 3.0)
 project(libsphinxql)
 find_package(PkgConfig REQUIRED)
 
+# Guess whether to use mysqlclient or mariadb library
+pkg_check_modules(LIBMYSQL QUIET mysqlclient)
+if (${LIBMYSQL_FOUND})
+    set(mysql_library "mysqlclient")
+else()
+    set(mysql_library "mariadb")
+endif()
+message(STATUS "MySQL client library to be used: ${mysql_library}")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -std=c++14 -Wall -Wextra -Wformat-security -Wuninitialized -Wfloat-equal")
 
 macro(include_lib target name)
@@ -27,7 +36,7 @@ add_library(libsphinxql SHARED src/sphinxql.cc src/querybuilder.cc)
 set_target_properties(libsphinxql PROPERTIES VERSION 0 SOVERSION 0)
 
 target_include_directories(libsphinxql PUBLIC "${CMAKE_SOURCE_DIR}/include/sphinxql")
-include_lib(libsphinxql mariadb)
+include_lib(libsphinxql ${mysql_library})
 
 install(TARGETS libsphinxql LIBRARY DESTINATION lib)
 install(DIRECTORY include/sphinxql DESTINATION include)
