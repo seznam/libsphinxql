@@ -594,6 +594,17 @@ AsyncQuery &AsyncQuery::operator=(AsyncQuery &&other) {
 }
 
 
+void AsyncQuery::clear() {
+    OnScopeEnd finalClear([&]{
+        queries.clear();
+    });
+    for (QueryPtr &query: queries) {
+        query->clear();
+        connections.push(std::move(query));
+    }
+}
+
+
 void AsyncQuery::add(const char *query, bool meta) {
     QueryPtr worker;
     if (!connections.empty()) {

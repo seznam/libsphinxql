@@ -274,6 +274,11 @@ class AsyncQuery {
     AsyncQuery &operator=(AsyncQuery &&);
 
     /**
+     * Clear scheduled queries. Not necessary to call after launch() was called.
+     */
+    void clear();
+
+    /**
      * Add a query prepared to async launch.
      * @param query  Query to sphinx. Semicolon termination required.
      * @param meta   Flag if query meta information is requested for query.
