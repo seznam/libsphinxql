@@ -7,8 +7,9 @@ C++ SphinxQL client to Sphinxsearch.
 
 ## Query
 
-To use simple query, `SphinxQL::Query` can be used. If multiple qieries
-are supplied, Sphinx could optimize these queries and use multiquery mode.
+Class `SphinxQL::Query` can be used to send one or more queries to sphinx.
+If multiple queries are supplied, Sphinx could optimize these queries
+and use [multiquery optimization](http://sphinxsearch.com/docs/current.html#multi-queries).
 If that optimization did not happen, queries then runs sequentially.
 
 The `addQuery(query, showMeta)` member function can be used to add single query,
@@ -101,14 +102,23 @@ by several ways:
   - `operator[fieldIndex]` to get raw value using field query index (0 to size()-1).
   - `operator>>()` to fetch next field into variable (not changing its value if field value is NULL).
 
+# Dependencies
+
+Library is using mysql client to communicate with Sphinx. To build this library,
+you need either `libmysqlclient-dev` or `libmariadbclient-dev` library installed.
+
+A C++14 compliant compiler is a must. Tested with g++ 6.3 and clang 3.8.
+
 # Build
 
-C++14 compiler is required. Build can be made using cmake.
-
-Build dependencies: libmysqlclient-dev | libmariadbclient-dev.
+Build can be done with cmake (tested on Debian Linux):
 
 ```sh
-mkdir build
+mkdir build && cd build
 cmake ..
 make
 ```
+
+# License
+
+Licensed under the MIT License.
