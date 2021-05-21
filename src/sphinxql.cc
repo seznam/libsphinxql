@@ -464,9 +464,6 @@ Query::Config::Config(std::chrono::seconds ct, std::chrono::seconds wt, std::chr
 {}
 
 
-Query::Query(): data(std::make_unique<PrivateData>()) {}
-
-
 Query::Query(const Query::Config &cfg): data(std::make_unique<PrivateData>()) {
     data->setConfigOptions(cfg);
 }
@@ -521,8 +518,8 @@ void Query::waitForAsyncResult() {
 }
 
 
-void Query::addQuery(const char *query, bool meta) {
-    data->addQuery(query, meta);
+void Query::addQuery(std::string query, bool meta) {
+    data->addQuery(std::move(query), meta);
 }
 
 
@@ -541,32 +538,19 @@ class AsyncQuery::PrivateData {
     std::string host;
     /// Port number (zero if host has to be treated as unix socket).
     int port;
-    /// Additional cfg (optional), since c++17 could be std::optional...
-    std::unique_ptr<Query::Config> cfg;
+    /// Additional configuration
+    Query::Config cfg;
   public:
-    PrivateData(const char *h, int p): host(h), port(p) {}
-    PrivateData(const char *h, int p, const Query::Config &cfg)
-        : host(h), port(p), cfg(std::make_unique<Query::Config>(cfg))
+    PrivateData(std::string &&host, int port, const Query::Config &cfg = Query::Config{})
+        : host(std::move(host)), port(port), cfg(cfg)
     {}
-    PrivateData(const PrivateData &other)
-        : host(other.host), port(other.port)
-    {
-        if (other.cfg) {
-            cfg = std::make_unique<Query::Config>(*other.cfg);
-        }
-    }
 
     friend class AsyncQuery;
 };
 
 
-AsyncQuery::AsyncQuery(const char *host, int port)
-    : data(std::make_unique<PrivateData>(host, port))
-{}
-
-
-AsyncQuery::AsyncQuery(const char *host, int port, const Query::Config &cfg)
-    : data(std::make_unique<PrivateData>(host, port, cfg))
+AsyncQuery::AsyncQuery(std::string host, int port, const Query::Config &cfg)
+    : data(std::make_unique<PrivateData>(std::move(host), port, cfg))
 {}
 
 
@@ -602,17 +586,13 @@ void AsyncQuery::clear() {
 }
 
 
-void AsyncQuery::add(const char *query, bool meta) {
+void AsyncQuery::add(std::string query, bool meta) {
     QueryPtr worker;
     if (!connections.empty()) {
         worker = std::move(connections.front());
         connections.pop();
     } else {
-        if (data->cfg) {
-            worker = std::make_unique<Query>(*(data->cfg));
-        } else {
-            worker = std::make_unique<Query>();
-        }
+        worker = std::make_unique<Query>(data->cfg);
 
         if (data->port) {
             worker->connect(data->host.c_str(), data->port);
@@ -620,7 +600,7 @@ void AsyncQuery::add(const char *query, bool meta) {
             worker->connect(data->host.c_str());
         }
     }
-    worker->addQuery(query, meta);
+    worker->addQuery(std::move(query), meta);
     queries.push_back(std::move(worker));
 }
 

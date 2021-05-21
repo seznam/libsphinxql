@@ -192,13 +192,9 @@ class Query {
     };
 
     /**
-     * Initialize Query object with default configuration options.
-     */
-    Query();
-    /**
      * Initialize Query object with supplied configuration.
      */
-    Query(const Config &cfg);
+    explicit Query(const Config &cfg = Config{});
     ~Query();
 
     Query(const Query &) = delete;
@@ -229,7 +225,7 @@ class Query {
      *               If so the SHOW META query result is added to the result
      *               and each returned variable can be read by Result::getMeta().
      */
-    void addQuery(const char *query, bool meta = true);
+    void addQuery(std::string query, bool meta = true);
 
     /// Execute query and get Response. Blocking function call.
     SphinxQL::Response execute();
@@ -266,8 +262,7 @@ class AsyncQuery {
     /// D-pointer for ABI compatibility
     std::unique_ptr<PrivateData> data;
   public:
-    AsyncQuery(const char *host, int port);
-    AsyncQuery(const char *host, int port, const Query::Config &cfg);
+    AsyncQuery(std::string host, int port, const Query::Config &cfg = Query::Config{});
     ~AsyncQuery();
 
     AsyncQuery(const AsyncQuery &) = delete;
@@ -285,8 +280,7 @@ class AsyncQuery {
      * @param query  Query to sphinx. Semicolon termination required.
      * @param meta   Flag if query meta information is requested for query.
      */
-    void add(const char *query, bool meta = true);
-    inline void add(const std::string &query, bool meta = true) { add(query.c_str(), meta); }
+    void add(std::string query, bool meta = true);
 
     /**
      * Add a query object. It could contain scheduled queries inside, or it is just added
