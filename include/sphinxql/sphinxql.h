@@ -11,6 +11,7 @@
 #include <vector>
 #include <queue>
 #include <memory>
+#include <chrono>
 #include <stdexcept>
 #include <inttypes.h>
 #include <mysql.h>
@@ -180,13 +181,14 @@ class Query {
 
   public:
     struct Config {
-        unsigned int connectTimeout;    ///< connection timeout (sec)
-        unsigned int writeTimeout;      ///< write timeout (sec)
-        unsigned int readTimeout;       ///< read timeout (sec)
+        std::chrono::seconds connectTimeout;
+        std::chrono::seconds writeTimeout;
+        std::chrono::seconds readTimeout;
         unsigned int optProtocol;       ///< mysql_protocol_type from mysql.h
 
-        Config();
-        Config(unsigned ct, unsigned wt = 3, unsigned rt = 3);
+        Config(std::chrono::seconds connectTimeout = std::chrono::seconds{1},
+               std::chrono::seconds writeTimeout = std::chrono::seconds{3},
+               std::chrono::seconds readTimeout = std::chrono::seconds{3});
     };
 
     /**

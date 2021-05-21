@@ -386,9 +386,12 @@ void Query::PrivateData::setConfigOptions(const Query::Config &cfg) {
     if (cfg.optProtocol) {
         mysql_options(con, MYSQL_OPT_PROTOCOL, &(cfg.optProtocol));
     }
-    mysql_options(con, MYSQL_OPT_CONNECT_TIMEOUT, &(cfg.connectTimeout));
-    mysql_options(con, MYSQL_OPT_WRITE_TIMEOUT, &(cfg.writeTimeout));
-    mysql_options(con, MYSQL_OPT_READ_TIMEOUT, &(cfg.readTimeout));
+    unsigned int value = cfg.connectTimeout.count();
+    mysql_options(con, MYSQL_OPT_CONNECT_TIMEOUT, &value);
+    value = cfg.writeTimeout.count();
+    mysql_options(con, MYSQL_OPT_WRITE_TIMEOUT, &value);
+    value = cfg.readTimeout.count();
+    mysql_options(con, MYSQL_OPT_READ_TIMEOUT, &value);
 }
 
 void Query::PrivateData::connect(const char *host, int port) {
@@ -455,13 +458,7 @@ std::unique_ptr<Result> Query::PrivateData::nextResult() {
 }
 
 
-Query::Config::Config()
-    : connectTimeout(1), writeTimeout(3), readTimeout(3),
-      optProtocol(0)
-{}
-
-
-Query::Config::Config(unsigned ct, unsigned wt, unsigned rt)
+Query::Config::Config(std::chrono::seconds ct, std::chrono::seconds wt, std::chrono::seconds rt)
     : connectTimeout(ct), writeTimeout(wt), readTimeout(rt),
       optProtocol(0)
 {}
