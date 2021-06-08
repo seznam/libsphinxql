@@ -23,6 +23,7 @@ class QueryConstructor {
     std::unique_ptr<PrivateData> data;
   public:
     QueryConstructor();
+    ~QueryConstructor();
     /// Set searched index.
     void setIndex(const std::string &i);
     /// Set searched keyword (phrase).

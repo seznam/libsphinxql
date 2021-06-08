@@ -60,6 +60,8 @@ class QueryConstructor::PrivateData {
 
 QueryConstructor::QueryConstructor(): data(std::make_unique<PrivateData>()) {}
 
+QueryConstructor::~QueryConstructor() = default;
+
 void QueryConstructor::setIndex(const std::string &i) {
     data->index = i;
 }
