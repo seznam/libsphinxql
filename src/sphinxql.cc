@@ -539,18 +539,24 @@ class AsyncQuery::PrivateData {
     /// Port number (zero if host has to be treated as unix socket).
     int port;
     /// Additional configuration
-    Query::Config cfg;
+    AsyncQuery::Config cfg;
+
   public:
-    PrivateData(std::string &&host, int port, const Query::Config &cfg = Query::Config{})
-        : host(std::move(host)), port(port), cfg(cfg)
+    PrivateData(std::string &&host, int port, AsyncQuery::Config &&cfg)
+        : host(std::move(host)), port(port), cfg(std::move(cfg))
     {}
 
     friend class AsyncQuery;
 };
 
 
-AsyncQuery::AsyncQuery(std::string host, int port, const Query::Config &cfg)
-    : data(std::make_unique<PrivateData>(std::move(host), port, cfg))
+AsyncQuery::Config::Config(Query::Config cfg, unsigned int minAliveConnections)
+    : queryCfg(std::move(cfg)), minAliveConnections(minAliveConnections)
+{}
+
+
+AsyncQuery::AsyncQuery(std::string host, int port, AsyncQuery::Config cfg)
+    : data(std::make_unique<PrivateData>(std::move(host), port, std::move(cfg)))
 {}
 
 
@@ -592,7 +598,7 @@ void AsyncQuery::add(std::string query, bool meta) {
         worker = std::move(connections.front());
         connections.pop();
     } else {
-        worker = std::make_unique<Query>(data->cfg);
+        worker = std::make_unique<Query>(data->cfg.queryCfg);
 
         if (data->port) {
             worker->connect(data->host.c_str(), data->port);
@@ -623,7 +629,8 @@ void AsyncQuery::add(Query &&query) {
 
 SphinxQL::Response AsyncQuery::launch() {
     // discard any unnecessary connections
-    while (!connections.empty()) {
+    while (!connections.empty()
+            && (queries.size() + connections.size() > data->cfg.minAliveConnections)) {
         connections.pop();
     }
 

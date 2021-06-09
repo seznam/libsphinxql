@@ -262,7 +262,15 @@ class AsyncQuery {
     /// D-pointer for ABI compatibility
     std::unique_ptr<PrivateData> data;
   public:
-    AsyncQuery(std::string host, int port, const Query::Config &cfg = Query::Config{});
+    struct Config {
+        /// Configuration for internally created Query instances.
+        Query::Config queryCfg;
+        /// Number of active connections to keep alive.
+        unsigned int minAliveConnections;
+
+        Config(Query::Config cfg = Query::Config{}, unsigned int minAliveConnections = 0);
+    };
+    AsyncQuery(std::string host, int port, AsyncQuery::Config cfg = AsyncQuery::Config{});
     ~AsyncQuery();
 
     AsyncQuery(const AsyncQuery &) = delete;
