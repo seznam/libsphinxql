@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sphinx:docset>
+ <sphinx:schema>
+  <sphinx:field name="name" />
+  <sphinx:attr name="int_data" type="int" bits="32" />
+  <sphinx:attr name="float_data" type="float" bits="32" />
+  <sphinx:attr name="string_data" type="string" />
+  <sphinx:attr name="json_data" type="json" />
+  <sphinx:attr name="multi_data" type="multi_64" />
+ </sphinx:schema>
+ <sphinx:document id="1">
+  <name><![CDATA[First doc]]></name>
+  <int_data>219</int_data>
+  <float_data>2</float_data>
+  <string_data><![CDATA[Additional string attribute]]></string_data>
+  <json_data><![CDATA[[["1607798880006",true,1],["7313020011448",true,189]]]]></json_data>
+  <multi_data><![CDATA[1607798880006 7313020011448]]></multi_data>
+ </sphinx:document>
+ <sphinx:document id="2">
+  <name><![CDATA[Second doc, without attributes]]></name>
+ </sphinx:document>
+</sphinx:docset>
