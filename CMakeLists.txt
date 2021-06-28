@@ -48,3 +48,7 @@ enable_testing()
 add_executable(test-build tests/test_build.cc)
 target_include_directories(test-build PUBLIC "${CMAKE_SOURCE_DIR}/include/sphinxql")
 target_link_libraries(test-build libsphinxql)
+
+add_executable(test-query tests/test_query.cc)
+target_include_directories(test-query PUBLIC "${CMAKE_SOURCE_DIR}/include/sphinxql")
+target_link_libraries(test-query libsphinxql -lgtest -lpthread)
