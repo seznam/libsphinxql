@@ -191,8 +191,8 @@ TEST(AsyncQuery, query) {
 
 
 int main(int argc, char *argv[]) {
-    // TODO launch sphinx indexer "./create_index.sh"
-    // TODO launch sphinx "searchd --console -c indexer.conf"
+    // NOTE tests are expecting running searchd, this is done from outside by
+    // run-tests.sh script.
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
